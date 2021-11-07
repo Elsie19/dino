@@ -1,4 +1,5 @@
 #!/bin/bash
+tabs 4
 export bold=$(tput bold)
 export normal=$(tput sgr0)
 export red=$(tput setaf 1)
@@ -37,6 +38,7 @@ case "$1" in
 		echo "Dino 0.0.1"
 		echo -e "Licensed under GPL v3\n"
 		echo -e "Type ${bold}HELP${normal} to get assistance"
+		echo -e "Type ${bold}CMD${normal} to get a list of available commands"
 		echo -e "Type ${bold}CREATE foo${normal} to make a database\n\n"
 		while true; do
 			echo -n "${bold}dino />${normal} "

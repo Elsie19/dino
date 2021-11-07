@@ -1,0 +1,27 @@
+#!/bin/bash
+set -e
+DB="$1"
+FIELD="$2"
+ITEM="$3"
+METADATA="$4"
+
+if ! [[ -d /var/db/dino/"$DB" ]]; then
+  echo "Non existent database" > "$TMP_ERROR_REASON"
+  exit 1
+fi
+
+if ! [[ -d /var/db/dino/"$DB"/"$FIELD" ]]; then
+  echo "Non existent field" > "$TMP_ERROR_REASON"
+  exit 1
+fi
+
+if [[ -z "$ITEM" ]]; then
+  echo "item empty" > "$TMP_ERROR_REASON"
+  exit 1
+fi
+if [[ -z "$METADATA" ]]; then
+  echo "metadata empty" > "$TMP_ERROR_REASON"
+  exit 1
+fi
+
+rm -vI --preserve-root /var/db/dino/"$DB"/"$FIELD"/"$ITEM"
