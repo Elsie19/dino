@@ -1,0 +1,24 @@
+#!/bin/bash
+set -e
+DB="$1"
+COMMITID="$2"
+
+if [[ -z "$1" ]]; then
+  echo "No input given" > "$TMP_ERROR_REASON"
+  exit 1
+fi
+
+if ! [[ -d /var/db/dino/"$DB"/.git ]]; then
+  echo "DB not using git" > "$TMP_ERROR_REASON"
+  exit 1
+fi
+
+cd /var/db/dino/"$DB"
+if [[ -n "$COMMITID" ]]; then
+  git reset --hard "$COMMITID"
+else
+  git reflog
+  echo -n "Which commit id? "
+  read -r commit
+  git reset --hard "$commit"
+fi

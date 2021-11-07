@@ -35,8 +35,9 @@ function lock() {
 case "$1" in
 	-P)
 		echo "Dino 0.0.1"
-		echo -e "Licensed under GPL v3\n\n"
-		echo -e "Type ${bold}HELP${normal} to get assistance\n\n"
+		echo -e "Licensed under GPL v3\n"
+		echo -e "Type ${bold}HELP${normal} to get assistance"
+		echo -e "Type ${bold}CREATE foo${normal} to make a database\n\n"
 		while true; do
 			echo -n "${bold}dino />${normal} "
 			read -r input

@@ -1,0 +1,32 @@
+#!/bin/bash
+set -e
+DB="$1"
+COMMIT_MSG="$2"
+
+if [[ -z "$1" ]]; then
+  echo "Nonexistent database" > "$TMP_ERROR_REASON"
+  exit 1
+fi
+
+if ! [[ -d /var/db/dino/"$DB"/.git ]]; then
+  echo "Database not using git" > "$TMP_ERROR_REASON"
+  exit 1
+fi
+
+cd /var/db/dino/"$DB"
+git add . || {
+  echo "Could not git add" > "$TMP_ERROR_REASON"
+  exit 1
+}
+
+if [[ -n "$COMMIT_MSG" ]]; then
+  git commit -m "$COMMIT_MSG" || {
+	echo "Could not git commit" > "$TMP_ERROR_REASON"
+	exit 1
+  }
+else
+  git commit -m "Updated database $DB" || {
+	echo "Could not git commit" > "$TMP_ERROR_REASON"
+	exit 1
+  }
+fi

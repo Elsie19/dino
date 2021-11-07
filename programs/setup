@@ -1,0 +1,14 @@
+#!/bin/bash
+set -e
+DB="$1"
+FIELD="$2"
+
+if ! [[ -d /var/db/dino/"$DB" ]]; then
+  echo "Non existent database" > "$TMP_ERROR_REASON"
+  exit 1
+fi
+
+mkdir -pv /var/db/dino/"$DB"/"$FIELD" || {
+  echo "Could not create field" > "$TMP_ERROR_REASON"
+  exit 1
+}
