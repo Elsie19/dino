@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 DB="$1"
-if [[ -z "$1" ]]; then
+if [[ "$1" -eq 0 ]]; then
   echo "No input given" > "$TMP_ERROR_REASON"
   exit 1
 fi

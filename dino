@@ -10,10 +10,10 @@ mkdir -p /tmp/dino/"$TMP_NUM" || {
 
 function lock() {
 	case "$1" in
-		create) touch /tmp/dino-lock ;;
-		remove) rm -f /tmp/dino-lock ;;
+		create) sudo touch /var/lock/dino.lock ;;
+		remove) sudo rm -f /var/lock/dino.lock ;;
 		check)
-			if [[ -f /tmp/dino-lock ]]; then
+			if [[ -f /var/lock/dino.lock ]]; then
 				return 1
 			else
 				return 0
@@ -23,20 +23,17 @@ function lock() {
 	esac
 }
 
-function ctrlc_lock() {
-	lock remove
-	exit 1
-}
-
-trap ctrlc_lock SIGINT
+# create a ctrl-c lock that will remove the lock on ctrl-c and exit the script
+#function ctrlc_lock() {
+#	lock remove
+#	exit 1
+#}
+#
+## Begin trapping
+#trap ctrlc_lock SIGINT
 
 case "$1" in
 	-P)
-		if ! lock check; then
-			echo "Running instance of Dino detected"
-			exit 1
-		fi
-		lock create
 		echo "Dino 0.0.1"
 		echo -e "Licensed under GPL v3\n\n"
 		echo -e "Type ${bold}HELP${normal} to get assistance\n\n"
@@ -55,23 +52,26 @@ case "$1" in
 				mkdir -p "$(dirname "$TMP_ERROR_REASON")"
 				touch "$TMP_ERROR_REASON"
 				echo "$input" | sed 's/^[^[:space:]]*[[:space:]]\{1,\}//' | tee /tmp/dino/"$TMP_NUM"/"$TMP_CMD" >/dev/null
-				# run the script with the input from the prompt
-				# shellcheck disable=SC2046
-				if ! bash /usr/share/dino/programs/"$(echo "${input%% *}" | tr '[:upper:]' '[:lower:]')" $(cat /tmp/dino/"$TMP_NUM"/"$TMP_CMD"); then
-					echo -e "${red}${input%% *} command failed!! Here is the given error reason${normal}:"
-					echo -e "\t${bold}==>${normal} $(cat $TMP_ERROR_REASON)"
-					unset TMP_ERROR_REASON
+				if ! [[ -s /tmp/dino/"$TMP_NUM"/"$TMP_CMD" ]]; then
+					if ! bash /usr/share/dino/programs/"$(echo "${input%% *}" | tr '[:upper:]' '[:lower:]')"; then
+						echo -e "${red}${input%% *} failed${normal}"
+						echo -e "\t==> $(cat $TMP_ERROR_REASON)"
+						rm -f "$TMP_ERROR_REASON"
+						unset TMP_ERROR_REASON
+					fi
+				else
+					if ! bash /usr/share/dino/programs/"$(echo "${input%% *}" | tr '[:upper:]' '[:lower:]')" $(cat /tmp/dino/"$TMP_NUM"/"$TMP_CMD"); then
+						echo -e "${red}${input%% *} failed${normal}"
+						echo -e "\t==> $(cat $TMP_ERROR_REASON)"
+						rm -f "$TMP_ERROR_REASON"
+						unset TMP_ERROR_REASON
+					fi
+					rm -f "$TMP_ERROR_REASON"
 				fi
 			fi
 		done
-		lock remove
 		;;
 	-C)
-		if ! lock check; then
-			echo "Running instance of Dino detected"
-			exit 1
-		fi
-		lock create
 		shift
 		input="$*"
 		if ! [[ -f "/usr/share/dino/programs/$(echo "${input%% *}" | tr '[:upper:]' '[:lower:]')" ]]; then
@@ -87,13 +87,23 @@ case "$1" in
 			echo "$input" | sed 's/^[^[:space:]]*[[:space:]]\{1,\}//' | tee /tmp/dino/"$TMP_NUM"/"$TMP_CMD" >/dev/null
 			# run the script with the input from the prompt
 			# shellcheck disable=SC2046
-			if ! bash /usr/share/dino/programs/"$(echo "${input%% *}" | tr '[:upper:]' '[:lower:]')" $(cat /tmp/dino/"$TMP_NUM"/"$TMP_CMD"); then
-				echo "${$input%% *} failed"
-				unset TMP_ERROR_REASON
-				exit 1
+			if ! [[ -s /tmp/dino/"$TMP_NUM"/"$TMP_CMD" ]]; then
+				if ! bash /usr/share/dino/programs/"$(echo "${input%% *}" | tr '[:upper:]' '[:lower:]')"; then
+					echo "${input%% *} failed"
+					rm -f "$TMP_ERROR_REASON"
+					unset TMP_ERROR_REASON
+					exit 1
+				fi
+			else
+				if ! bash /usr/share/dino/programs/"$(echo "${input%% *}" | tr '[:upper:]' '[:lower:]')" $(cat /tmp/dino/"$TMP_NUM"/"$TMP_CMD"); then
+					echo "${input%% *} failed"
+					rm -f "$TMP_ERROR_REASON"
+					unset TMP_ERROR_REASON
+					exit 1
+				fi
+				rm -f "$TMP_ERROR_REASON"
 			fi
 		fi
-		lock remove
 		;;
 	*)
 		echo "Invalid input"
