@@ -2,16 +2,16 @@
 set -e
 DB="$1"
 if [[ -z "$1" ]]; then
-  echo "No input given" > "$TMP_ERROR_REASON"
+  error_log "No input given"
   exit 1
 fi
 
 if ! [[ -d /var/db/dino/"$DB" ]]; then
-  echo "Nonexistent database" > "$TMP_ERROR_REASON"
+  error_log "Nonexistent database"
   exit 1
 fi
 
 zip -r "$DB".zip /var/db/dino/"$DB" || {
-  echo "Failed to export database" > "$TMP_ERROR_REASON"
+  error_log "Failed to export database"
   exit 1
 }

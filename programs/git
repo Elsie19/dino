@@ -2,19 +2,19 @@
 set -e
 DB="$1"
 if [[ "$1" == "git" ]]; then
-  echo "No input provided" > "$TMP_ERROR_REASON"
+  error_log "No input provided"
   exit 1
 fi
 
 # Check if DB exists
 if ! [[ -d /var/db/dino/"$DB" ]]; then
-  echo "Non existent database" > "$TMP_ERROR_REASON"
+  error_log "Non existent database"
   exit 1
 fi
 # Check if it has a .git dir
 if ! [[ -d /var/db/dino/"$DB"/.git ]]; then
   git init -q /var/db/dino/"$DB" || {
-    echo "Could not create git directory" > "$TMP_ERROR_REASON"
+    error_log "Could not create git directory"
     exit 1
 }
 else

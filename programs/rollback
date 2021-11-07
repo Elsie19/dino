@@ -4,12 +4,12 @@ DB="$1"
 COMMITID="$2"
 
 if [[ -z "$1" ]]; then
-  echo "No input given" > "$TMP_ERROR_REASON"
+  error_log "No input given"
   exit 1
 fi
 
 if ! [[ -d /var/db/dino/"$DB"/.git ]]; then
-  echo "DB not using git" > "$TMP_ERROR_REASON"
+  error_log "Database not using git"
   exit 1
 fi
 

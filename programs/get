@@ -5,12 +5,12 @@ FIELD="$2"
 ITEM="$3"
 # We want to ls the database is metadata isn't specified, but if it is, cat the file
 if [[ -z "$1" ]]; then
-  echo "No input given" > "$TMP_ERROR_REASON"
+  error_log "No input given"
   exit 1
 fi
 
 if ! [[ -d /var/db/dino/"$DB" ]]; then
-  echo "Nonexistent database" > "$TMP_ERROR_REASON"
+  error_log "Nonexistent database"
   exit 1
 fi
 
@@ -24,7 +24,7 @@ if [[ -z "$ITEM" ]]; then
   exit
 fi
 cat /var/db/dino/"$DB"/"$FIELD"/"$ITEM" || {
-  echo "Nonexistent item" > "$TMP_ERROR_REASON"
+  error_log "Nonexistent item"
   exit 1
 }
 exit

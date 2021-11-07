@@ -1,8 +1,13 @@
 #!/bin/bash
 tabs 4
+# shellcheck disable=SC2155
 export bold=$(tput bold)
+# shellcheck disable=SC2155
 export normal=$(tput sgr0)
+# shellcheck disable=SC2155
 export red=$(tput setaf 1)
+
+# Create a random num so we can use that for a tmp location to store things
 TMP_NUM=$(xxd -l 6 -c 6 -p < /dev/random)
 mkdir -p /tmp/dino/"$TMP_NUM" || {
 	echo "Could not create ${bold}/tmp/dino/${TMP_NUM}${normal}"
@@ -23,6 +28,12 @@ function lock() {
 		*) echo "Invalid lock option";;
 	esac
 }
+
+function error_log() {
+	echo "$1" | tee "$TMP_ERROR_REASON" >/dev/null
+	exit 1
+}
+export -f error_log
 
 # create a ctrl-c lock that will remove the lock on ctrl-c and exit the script
 function ctrlc_lock() {
@@ -50,11 +61,13 @@ case "$1" in
 				# add the arguments to a file so we can use that later
 				# CREATE row names -> row names
 				TMP_CMD=$(xxd -l 6 -c 6 -p < /dev/random)
+				# TMP_ERROR_REASON will allow the program to return an error message in case of failure
 				TMP_ERROR_REASON="/tmp/dino/error_reason/$(xxd -l 6 -c 6 -p < /dev/random)"
 				export TMP_ERROR_REASON
 				mkdir -p "$(dirname "$TMP_ERROR_REASON")"
 				touch "$TMP_ERROR_REASON"
 				echo "$input" | sed 's/^[^[:space:]]*[[:space:]]\{1,\}//' | tee /tmp/dino/"$TMP_NUM"/"$TMP_CMD" >/dev/null
+				# is the file (arguments) empty? If so, run the cmd without args, else run with args
 				if ! [[ -s /tmp/dino/"$TMP_NUM"/"$TMP_CMD" ]]; then
 					if ! bash /usr/share/dino/programs/"$(echo "${input%% *}" | tr '[:upper:]' '[:lower:]')"; then
 						echo -e "${red}${input%% *} failed${normal}"

@@ -6,21 +6,21 @@ ITEM="$3"
 METADATA="$4"
 
 if ! [[ -d /var/db/dino/"$DB" ]]; then
-  echo "Non existent database" > "$TMP_ERROR_REASON"
+  error_log "Non existent database"
   exit 1
 fi
 
 if ! [[ -d /var/db/dino/"$DB"/"$FIELD" ]]; then
-  echo "Non existent field" > "$TMP_ERROR_REASON"
+  error_log "Non existent field"
   exit 1
 fi
 
 if [[ -z "$ITEM" ]]; then
-  echo "item empty" > "$TMP_ERROR_REASON"
+  error_log "item empty"
   exit 1
 fi
 if [[ -z "$METADATA" ]]; then
-  echo "metadata empty" > "$TMP_ERROR_REASON"
+  error_log "metadata empty"
   exit 1
 fi
 

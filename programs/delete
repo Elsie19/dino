@@ -3,7 +3,7 @@ set -e
 DB="$1"
 PROMPT="$2"
 if [[ -z "$1" ]]; then
-  echo "No input given" > "$TMP_ERROR_REASON"
+  error_log "No input given"
 fi
 
 if [[ -n "$PROMPT" ]]; then
@@ -11,7 +11,7 @@ if [[ -n "$PROMPT" ]]; then
   read -r answer
   if [[ "$answer" == "y" ]]; then
 	rm -rfv "/var/db/dino/${DB:?}/" || {
-	  echo "Could not remove database" > "$TMP_ERROR_REASON"
+	  error_log "Could not remove database"
 	  exit 1
 	}
   else
@@ -19,7 +19,7 @@ if [[ -n "$PROMPT" ]]; then
   fi
 else
   rm -rfv "/var/db/dino/${DB:?}/" || {
-	echo "Could not remove database" > "$TMP_ERROR_REASON"
-	exit 1
+    error_log "Could not remove database"
+    exit 1
   }
 fi

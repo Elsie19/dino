@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 if [[ -d /var/db/dino ]]; then
-  \ls -1aA /var/db/dino
+  ls -1aA /var/db/dino
 else
-  echo "No databases found" > "$TMP_ERROR_REASON"
+  error_log "No databases found"
   exit 1
 fi
