@@ -1,0 +1,6 @@
+#!/bin/bash
+echo "This is a Dino cheatsheet:"
+echo "${bold}CREATE${normal} row/column"
+echo "${bold}GET${normal} rownum columnnum"
+echo "${bold}TESTING${normal} anytext"
+exit

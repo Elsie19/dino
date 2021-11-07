@@ -1,0 +1,30 @@
+#!/bin/bash
+set -e
+DB=$1
+ROW=$2
+COLUMN=$3
+
+if [[ $1 -eq 0 ]]; then
+  echo "No input given" > "$TMP_ERROR_REASON"
+  exit 1
+fi
+
+[[ -d /var/db/dino/"$DB" ]] || {
+  echo "Nonexistent database" > "$TMP_ERROR_REASON"
+  exit 1
+}
+
+[[ -d /var/db/dino/"$DB"/"$ROW" ]] || {
+  echo "Nonexistent row" > "$TMP_ERROR_REASON"
+  exit 1
+}
+
+[[ -f /var/db/dino/"$DB"/"$ROW"/"$COLUMN" ]] || {
+  echo "Nonexistent column" > "$TMP_ERROR_REASON"
+  exit 1
+}
+
+cat /var/db/dino/"$DB"/"$ROW"/"$COLUMN" || {
+  echo "Failed to read from database (DB row and column exist)" > "$TMP_ERROR_REASON"
+  exit 1
+}

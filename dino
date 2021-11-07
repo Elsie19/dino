@@ -1,0 +1,44 @@
+#!/bin/bash
+export bold=$(tput bold)
+export normal=$(tput sgr0)
+export red=$(tput setaf 1)
+TMP_NUM=$(xxd -l 6 -c 6 -p < /dev/random)
+mkdir -p /tmp/dino/"$TMP_NUM" || {
+	echo "Could not create ${bold}/tmp/dino/${TMP_NUM}${normal}"
+	exit 1
+}
+
+case "$1" in
+	-P)
+		echo "Dino 0.0.1"
+		echo -e "Licensed under GPL v3\n\n"
+		echo -e "Type ${bold}HELP${normal} to get assistance\n\n"
+		while true; do
+			echo -n "${bold}dino />${normal} "
+			read -r input
+			# check if /usr/share/dino/programs/first_word_lowercase exists
+			if ! [[ -f "/usr/share/dino/programs/$(echo "${input%% *}" | tr '[:upper:]' '[:lower:]')" ]]; then
+				echo "${input%% *} is not a valid command!"
+			else
+				# add the arguments to a file so we can use that later
+				# CREATE row names -> row names
+				TMP_CMD=$(xxd -l 6 -c 6 -p < /dev/random)
+				export TMP_ERROR_REASON="/tmp/dino/error_reason/$(xxd -l 6 -c 6 -p < /dev/random)"
+				mkdir -p "$(dirname "$TMP_ERROR_REASON")"
+				touch "$TMP_ERROR_REASON"
+				echo "$input" | sed 's/^[^[:space:]]*[[:space:]]\{1,\}//' | tee /tmp/dino/"$TMP_NUM"/"$TMP_CMD" >/dev/null
+				# run the script with the input from the prompt
+				# shellcheck disable=SC2046
+				if ! bash /usr/share/dino/programs/"$(echo "${input%% *}" | tr '[:upper:]' '[:lower:]')" $(cat /tmp/dino/"$TMP_NUM"/"$TMP_CMD"); then
+					echo -e "${red}${input%% *} command failed!! Here is the given error reason${normal}:"
+					echo -e "\t${bold}==>${normal} $(cat $TMP_ERROR_REASON)"
+					unset TMP_ERROR_REASON
+				fi
+			fi
+		done
+		;;
+	*)
+		echo "Invalid input"
+		exit 1
+		;;
+esac
