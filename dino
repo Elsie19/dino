@@ -8,8 +8,35 @@ mkdir -p /tmp/dino/"$TMP_NUM" || {
 	exit 1
 }
 
+function lock() {
+	case "$1" in
+		create) touch /tmp/dino-lock ;;
+		remove) rm -f /tmp/dino-lock ;;
+		check)
+			if [[ -f /tmp/dino-lock ]]; then
+				return 1
+			else
+				return 0
+			fi
+		;;
+		*) echo "Invalid lock option";;
+	esac
+}
+
+function ctrlc_lock() {
+	lock remove
+	exit 1
+}
+
+trap ctrlc_lock SIGINT
+
 case "$1" in
 	-P)
+		if ! lock check; then
+			echo "Running instance of Dino detected"
+			exit 1
+		fi
+		lock create
 		echo "Dino 0.0.1"
 		echo -e "Licensed under GPL v3\n\n"
 		echo -e "Type ${bold}HELP${normal} to get assistance\n\n"
@@ -37,6 +64,36 @@ case "$1" in
 				fi
 			fi
 		done
+		lock remove
+		;;
+	-C)
+		if ! lock check; then
+			echo "Running instance of Dino detected"
+			exit 1
+		fi
+		lock create
+		shift
+		input="$*"
+		if ! [[ -f "/usr/share/dino/programs/$(echo "${input%% *}" | tr '[:upper:]' '[:lower:]')" ]]; then
+			echo -e "${red}${input%% *} is not a valid command!${normal}"
+		else
+			# add the arguments to a file so we can use that later
+			# CREATE row names -> row names
+			TMP_CMD=$(xxd -l 6 -c 6 -p < /dev/random)
+			TMP_ERROR_REASON="/tmp/dino/error_reason/$(xxd -l 6 -c 6 -p < /dev/random)"
+			export TMP_ERROR_REASON
+			mkdir -p "$(dirname "$TMP_ERROR_REASON")"
+			touch "$TMP_ERROR_REASON"
+			echo "$input" | sed 's/^[^[:space:]]*[[:space:]]\{1,\}//' | tee /tmp/dino/"$TMP_NUM"/"$TMP_CMD" >/dev/null
+			# run the script with the input from the prompt
+			# shellcheck disable=SC2046
+			if ! bash /usr/share/dino/programs/"$(echo "${input%% *}" | tr '[:upper:]' '[:lower:]')" $(cat /tmp/dino/"$TMP_NUM"/"$TMP_CMD"); then
+				echo "${$input%% *} failed"
+				unset TMP_ERROR_REASON
+				exit 1
+			fi
+		fi
+		lock remove
 		;;
 	*)
 		echo "Invalid input"
