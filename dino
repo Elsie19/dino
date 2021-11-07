@@ -24,13 +24,13 @@ function lock() {
 }
 
 # create a ctrl-c lock that will remove the lock on ctrl-c and exit the script
-#function ctrlc_lock() {
-#	lock remove
-#	exit 1
-#}
-#
-## Begin trapping
-#trap ctrlc_lock SIGINT
+function ctrlc_lock() {
+	rm -rf /tmp/dino/"$TMP_NUM"
+	exit 1
+}
+
+# Begin trapping
+trap ctrlc_lock SIGINT
 
 case "$1" in
 	-P)
