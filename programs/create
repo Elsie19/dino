@@ -1,0 +1,12 @@
+#!/bin/bash
+set -e
+DB="$1"
+if [[ -z "$1" ]]; then
+  echo "No input given" > "$TMP_ERROR_REASON"
+  exit 1
+fi
+
+mkdir -p /var/db/dino/"$DB" || {
+  echo "Insufficient permissions" > "$TMP_ERROR_REASON"
+  exit 1
+}

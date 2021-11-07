@@ -18,12 +18,13 @@ case "$1" in
 			read -r input
 			# check if /usr/share/dino/programs/first_word_lowercase exists
 			if ! [[ -f "/usr/share/dino/programs/$(echo "${input%% *}" | tr '[:upper:]' '[:lower:]')" ]]; then
-				echo "${input%% *} is not a valid command!"
+				echo -e "${red}${input%% *} is not a valid command!${normal}"
 			else
 				# add the arguments to a file so we can use that later
 				# CREATE row names -> row names
 				TMP_CMD=$(xxd -l 6 -c 6 -p < /dev/random)
-				export TMP_ERROR_REASON="/tmp/dino/error_reason/$(xxd -l 6 -c 6 -p < /dev/random)"
+				TMP_ERROR_REASON="/tmp/dino/error_reason/$(xxd -l 6 -c 6 -p < /dev/random)"
+				export TMP_ERROR_REASON
 				mkdir -p "$(dirname "$TMP_ERROR_REASON")"
 				touch "$TMP_ERROR_REASON"
 				echo "$input" | sed 's/^[^[:space:]]*[[:space:]]\{1,\}//' | tee /tmp/dino/"$TMP_NUM"/"$TMP_CMD" >/dev/null
