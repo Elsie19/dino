@@ -25,7 +25,7 @@ function lock() {
 				return 0
 			fi
 		;;
-		*) echo "Invalid lock option";;
+		*) echo "Invalid lock option" ;;
 	esac
 }
 
@@ -46,7 +46,7 @@ trap ctrlc_lock SIGINT
 
 case "$1" in
 	-P)
-		echo "Dino 0.0.1"
+		echo "Dino 0.0.1 -- $TMP_NUM"
 		echo -e "Licensed under GPL v3\n"
 		echo -e "Type ${bold}HELP${normal} to get assistance"
 		echo -e "Type ${bold}CMD${normal} to get a list of available commands"
@@ -69,16 +69,17 @@ case "$1" in
 				echo "$input" | sed 's/^[^[:space:]]*[[:space:]]\{1,\}//' | tee /tmp/dino/"$TMP_NUM"/"$TMP_CMD" >/dev/null
 				# is the file (arguments) empty? If so, run the cmd without args, else run with args
 				if ! [[ -s /tmp/dino/"$TMP_NUM"/"$TMP_CMD" ]]; then
-					if ! bash /usr/share/dino/programs/"$(echo "${input%% *}" | tr '[:upper:]' '[:lower:]')"; then
+					if ! bash /usr/share/dino/programs/"${input%% *}" | tr '[:upper:]' '[:lower:]'; then
 						echo -e "${red}${input%% *} failed${normal}"
-						echo -e "\t==> $(cat $TMP_ERROR_REASON)"
+						echo -e "\t==> $(< "$TMP_ERROR_REASON")"
 						rm -f "$TMP_ERROR_REASON"
 						unset TMP_ERROR_REASON
 					fi
 				else
+					# shellcheck disable=SC2046
 					if ! bash /usr/share/dino/programs/"$(echo "${input%% *}" | tr '[:upper:]' '[:lower:]')" $(cat /tmp/dino/"$TMP_NUM"/"$TMP_CMD"); then
 						echo -e "${red}${input%% *} failed${normal}"
-						echo -e "\t==> $(cat $TMP_ERROR_REASON)"
+						echo -e "\t==> $(< "$TMP_ERROR_REASON")"
 						rm -f "$TMP_ERROR_REASON"
 						unset TMP_ERROR_REASON
 					fi
@@ -104,7 +105,7 @@ case "$1" in
 			# run the script with the input from the prompt
 			# shellcheck disable=SC2046
 			if ! [[ -s /tmp/dino/"$TMP_NUM"/"$TMP_CMD" ]]; then
-				if ! bash /usr/share/dino/programs/"$(echo "${input%% *}" | tr '[:upper:]' '[:lower:]')"; then
+				if ! bash /usr/share/dino/programs/"${input%% *}" | tr '[:upper:]' '[:lower:]'; then
 					echo "${input%% *} failed"
 					rm -f "$TMP_ERROR_REASON"
 					unset TMP_ERROR_REASON
