@@ -10,3 +10,8 @@
     <br />
     </p>
 </p>
+
+### Installing
+```bash
+bash -c "$(curl -fsSL https://git.io/dino-install)"
+```
