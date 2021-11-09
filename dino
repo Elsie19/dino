@@ -123,7 +123,10 @@ case "$1" in
 		fi
 		;;
 	*)
-		echo "Invalid input"
+		echo "dino -P"
+		echo -e "\t-- Run Dino interactively"
+		echo "dino -C [cmd]"
+		echo -e "\t-- Run Dino non-interactively" 
 		exit 1
 		;;
 esac
