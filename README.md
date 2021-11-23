@@ -12,6 +12,11 @@
 </p>
 
 ### Installing
+##### With a script
 ```bash
 bash -c "$(curl -fsSL https://git.io/dino-install)"
+```
+##### With Pacstall
+```bash
+pacstall -I dino-git
 ```
