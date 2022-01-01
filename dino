@@ -1,4 +1,5 @@
 #!/bin/bash
+stty -echoctl
 tabs 4
 # shellcheck disable=SC2155
 export bold=$(tput bold)
