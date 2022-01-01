@@ -1,0 +1,7 @@
+#!/bin/bash
+set -e
+echo -e "Run ${bold}CREATE tutorial${normal}"
+echo -e "Run ${bold}SETUP tutorial names${normal}"
+echo -e "Run ${bold}INSERT tutorial names ${USER:-$LOGNAME} 16${normal}"
+echo -e "Run ${bold}GET tutorial names ${USER:-$LOGNAME}${normal}"
+exit

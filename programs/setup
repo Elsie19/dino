@@ -8,7 +8,7 @@ if ! [[ -d /var/db/dino/"$DB" ]]; then
   exit 1
 fi
 
-mkdir -pv /var/db/dino/"$DB"/"$FIELD" || {
+mkdir -p /var/db/dino/"$DB"/"$FIELD" || {
   error_log "Could not create field"
   exit 1
 }

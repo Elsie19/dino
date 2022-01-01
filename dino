@@ -18,7 +18,7 @@ mkdir -p /tmp/dino/"$TMP_NUM" || {
 function lock() {
 	case "$1" in
 		create) sudo touch /var/lock/dino.lock ;;
-		remove) sudo rm -f /var/lock/dino.lock ;;
+		remove) sudo rm /var/lock/dino.lock ;;
 		check)
 			if [[ -f /var/lock/dino.lock ]]; then
 				return 1
@@ -122,6 +122,13 @@ case "$1" in
 				rm -f "$TMP_ERROR_REASON"
 			fi
 		fi
+		;;
+	-h|--help|help)
+		echo "dino -P"
+		echo -e "\t-- Run Dino interactively"
+		echo "dino -C [cmd]"
+		echo -e "\t-- Run Dino non-interactively" 
+		exit
 		;;
 	*)
 		echo "dino -P"
