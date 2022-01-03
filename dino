@@ -9,7 +9,7 @@ export normal=$(tput sgr0)
 export red=$(tput setaf 1)
 
 # Create a random num so we can use that for a tmp location to store things
-TMP_NUM=$(xxd -l 6 -c 6 -p < /dev/random)
+TMP_NUM="$(xxd -l 6 -c 6 -p < /dev/random)"
 mkdir -p /tmp/dino/"$TMP_NUM" || {
 	echo "Could not create ${bold}/tmp/dino/${TMP_NUM}${normal}"
 	exit 1
