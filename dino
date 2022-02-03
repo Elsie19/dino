@@ -57,7 +57,7 @@ case "$1" in
 			read -r input
 			# check if /usr/share/dino/programs/first_word_lowercase exists
 			if ! [[ -f "/usr/share/dino/programs/$(echo "${input%% *}" | tr '[:upper:]' '[:lower:]')" ]]; then
-				echo -e "${red}${input%% *} is not a valid command!${normal}"
+				echo -e "${red}${input%% *} is not a valid command${normal}"
 			else
 				# add the arguments to a file so we can use that later
 				# CREATE row names -> row names
@@ -93,7 +93,7 @@ case "$1" in
 		shift
 		input="$*"
 		if ! [[ -f "/usr/share/dino/programs/$(echo "${input%% *}" | tr '[:upper:]' '[:lower:]')" ]]; then
-			echo -e "${red}${input%% *} is not a valid command!${normal}"
+			echo -e "${red}${input%% *} is not a valid command${normal}"
 		else
 			# add the arguments to a file so we can use that later
 			# CREATE row names -> row names
