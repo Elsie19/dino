@@ -11,114 +11,114 @@ export red=$(tput setaf 1)
 # Create a random num so we can use that for a tmp location to store things
 TMP_NUM="$(xxd -l 6 -c 6 -p < /dev/random)"
 mkdir -p /tmp/dino/"${TMP_NUM}" || {
-	echo "Could not create ${bold}/tmp/dino/${TMP_NUM}${normal}"
-	exit 1
+  echo "Could not create ${bold}/tmp/dino/${TMP_NUM}${normal}"
+  exit 1
 }
 
 function error_log() {
-	echo "$1" | tee "${TMP_ERROR_REASON}" >/dev/null
-	exit 1
+  echo "$1" | tee "${TMP_ERROR_REASON}" > /dev/null
+  exit 1
 }
 export -f error_log
 
 # create a ctrl-c lock that will remove the lock on ctrl-c and exit the script
 function ctrlc_lock() {
-	rm -rf /tmp/dino/"${TMP_NUM}"
-	exit 1
+  rm -rf /tmp/dino/"${TMP_NUM}"
+  exit 1
 }
 
 # Begin trapping
 trap ctrlc_lock SIGINT
 
 case "$1" in
-	-P)
-		echo "Dino 0.0.1 -- ${TMP_NUM}"
-		echo -e "Licensed under GPL v3\n"
-		echo -e "Type ${bold}HELP${normal} to get assistance"
-		echo -e "Type ${bold}CMD${normal} to get a list of available commands"
-		echo -e "Type ${bold}CREATE foo${normal} to make a database\n\n"
-		while true; do
-			read -rp "${bold}dino />${normal} " input
-			# check if /usr/share/dino/programs/first_word_lowercase exists
-			if ! [[ -f "/usr/share/dino/programs/$(echo "${input%% *}" | tr '[:upper:]' '[:lower:]')" ]]; then
-				echo -e "${red}${input%% *} is not a valid command${normal}"
-			else
-				# add the arguments to a file so we can use that later
-				# CREATE row names -> row names
-				TMP_CMD=$(xxd -l 6 -c 6 -p < /dev/random)
-				# TMP_ERROR_REASON will allow the program to return an error message in case of failure
-				TMP_ERROR_REASON="/tmp/dino/error_reason/$(xxd -l 6 -c 6 -p < /dev/random)"
-				export TMP_ERROR_REASON
-				mkdir -p "$(dirname "$TMP_ERROR_REASON")"
-				touch "$TMP_ERROR_REASON"
-				echo "$input" | sed 's/^[^[:space:]]*[[:space:]]\{1,\}//' | tee /tmp/dino/"$TMP_NUM"/"$TMP_CMD" >/dev/null
-				# is the file (arguments) empty? If so, run the cmd without args, else run with args
-				if ! [[ -s /tmp/dino/"$TMP_NUM"/"$TMP_CMD" ]]; then
-					if ! bash /usr/share/dino/programs/"${input%% *}" | tr '[:upper:]' '[:lower:]'; then
-						echo -e "${red}${input%% *} failed${normal}"
-						echo -e "\t==> $(< "$TMP_ERROR_REASON")"
-						rm -f "$TMP_ERROR_REASON"
-						unset TMP_ERROR_REASON
-					fi
-				else
-					# shellcheck disable=SC2046
-					if ! bash /usr/share/dino/programs/"$(echo "${input%% *}" | tr '[:upper:]' '[:lower:]')" $(cat /tmp/dino/"$TMP_NUM"/"$TMP_CMD"); then
-						echo -e "${red}${input%% *} failed${normal}"
-						echo -e "\t==> $(< "${TMP_ERROR_REASON}")"
-						rm -f "${TMP_ERROR_REASON:?}"
-						unset TMP_ERROR_REASON
-					fi
-					rm -f "${TMP_ERROR_REASON}"
-				fi
-			fi
-		done
-		;;
-	-C)
-		shift
-		input="$*"
-		if ! [[ -f "/usr/share/dino/programs/$(echo "${input%% *}" | tr '[:upper:]' '[:lower:]')" ]]; then
-			echo -e "${red}${input%% *} is not a valid command${normal}"
-		else
-			# add the arguments to a file so we can use that later
-			# CREATE row names -> row names
-			TMP_CMD=$(xxd -l 6 -c 6 -p < /dev/random)
-			TMP_ERROR_REASON="/tmp/dino/error_reason/$(xxd -l 6 -c 6 -p < /dev/random)"
-			export TMP_ERROR_REASON
-			mkdir -p "$(dirname "${TMP_ERROR_REASON}")"
-			touch "${TMP_ERROR_REASON}"
-			echo "${input}" | sed 's/^[^[:space:]]*[[:space:]]\{1,\}//' | tee /tmp/dino/"${TMP_NUM}"/"${TMP_CMD}" >/dev/null
-			# run the script with the input from the prompt
-			# shellcheck disable=SC2046
-			if ! [[ -s /tmp/dino/"${TMP_NUM}"/"${TMP_CMD}" ]]; then
-				if ! bash /usr/share/dino/programs/"${input%% *}" | tr '[:upper:]' '[:lower:]'; then
-					echo "${input%% *} failed"
-					rm -f "$TMP_ERROR_REASON"
-					unset TMP_ERROR_REASON
-					exit 1
-				fi
-			else
-				if ! bash /usr/share/dino/programs/"$(echo "${input%% *}" | tr '[:upper:]' '[:lower:]')" $(cat /tmp/dino/"${TMP_NUM}"/"${TMP_CMD}"); then
-					echo "${input%% *} failed"
-					rm -f "${TMP_ERROR_REASON:?}"
-					unset TMP_ERROR_REASON
-					exit 1
-				fi
-				rm -f "${TMP_ERROR_REASON}"
-			fi
-		fi
-		;;
-	-h|--help|help)
-		echo "dino -P"
-		echo -e "\t-- Run Dino interactively"
-		echo "dino -C [cmd]"
-		echo -e "\t-- Run Dino non-interactively" 
-		exit
-		;;
-	*)
-		echo "dino -P"
-		echo -e "\t-- Run Dino interactively"
-		echo "dino -C [cmd]"
-		echo -e "\t-- Run Dino non-interactively" 
-		exit 1
-		;;
+  -P)
+    echo "Dino 0.0.1 -- ${TMP_NUM}"
+    echo -e "Licensed under GPL v3\n"
+    echo -e "Type ${bold}HELP${normal} to get assistance"
+    echo -e "Type ${bold}CMD${normal} to get a list of available commands"
+    echo -e "Type ${bold}CREATE foo${normal} to make a database\n\n"
+    while true; do
+      read -rp "${bold}dino />${normal} " input
+      # check if /usr/share/dino/programs/first_word_lowercase exists
+      if ! [[ -f "/usr/share/dino/programs/$(echo "${input%% *}" | tr '[:upper:]' '[:lower:]')" ]]; then
+        echo -e "${red}${input%% *} is not a valid command${normal}"
+      else
+        # add the arguments to a file so we can use that later
+        # CREATE row names -> row names
+        TMP_CMD=$(xxd -l 6 -c 6 -p < /dev/random)
+        # TMP_ERROR_REASON will allow the program to return an error message in case of failure
+        TMP_ERROR_REASON="/tmp/dino/error_reason/$(xxd -l 6 -c 6 -p < /dev/random)"
+        export TMP_ERROR_REASON
+        mkdir -p "$(dirname "$TMP_ERROR_REASON")"
+        touch "$TMP_ERROR_REASON"
+        echo "$input" | sed 's/^[^[:space:]]*[[:space:]]\{1,\}//' | tee /tmp/dino/"$TMP_NUM"/"$TMP_CMD" > /dev/null
+        # is the file (arguments) empty? If so, run the cmd without args, else run with args
+        if ! [[ -s /tmp/dino/"$TMP_NUM"/"$TMP_CMD" ]]; then
+          if ! bash /usr/share/dino/programs/"${input%% *}" | tr '[:upper:]' '[:lower:]'; then
+            echo -e "${red}${input%% *} failed${normal}"
+            echo -e "\t==> $(< "$TMP_ERROR_REASON")"
+            rm -f "$TMP_ERROR_REASON"
+            unset TMP_ERROR_REASON
+          fi
+        else
+          # shellcheck disable=SC2046
+          if ! bash /usr/share/dino/programs/"$(echo "${input%% *}" | tr '[:upper:]' '[:lower:]')" $(cat /tmp/dino/"$TMP_NUM"/"$TMP_CMD"); then
+            echo -e "${red}${input%% *} failed${normal}"
+            echo -e "\t==> $(< "${TMP_ERROR_REASON}")"
+            rm -f "${TMP_ERROR_REASON:?}"
+            unset TMP_ERROR_REASON
+          fi
+          rm -f "${TMP_ERROR_REASON}"
+        fi
+      fi
+    done
+    ;;
+  -C)
+    shift
+    input="$*"
+    if ! [[ -f "/usr/share/dino/programs/$(echo "${input%% *}" | tr '[:upper:]' '[:lower:]')" ]]; then
+      echo -e "${red}${input%% *} is not a valid command${normal}"
+    else
+      # add the arguments to a file so we can use that later
+      # CREATE row names -> row names
+      TMP_CMD=$(xxd -l 6 -c 6 -p < /dev/random)
+      TMP_ERROR_REASON="/tmp/dino/error_reason/$(xxd -l 6 -c 6 -p < /dev/random)"
+      export TMP_ERROR_REASON
+      mkdir -p "$(dirname "${TMP_ERROR_REASON}")"
+      touch "${TMP_ERROR_REASON}"
+      echo "${input}" | sed 's/^[^[:space:]]*[[:space:]]\{1,\}//' | tee /tmp/dino/"${TMP_NUM}"/"${TMP_CMD}" > /dev/null
+      # run the script with the input from the prompt
+      # shellcheck disable=SC2046
+      if ! [[ -s /tmp/dino/"${TMP_NUM}"/"${TMP_CMD}" ]]; then
+        if ! bash /usr/share/dino/programs/"${input%% *}" | tr '[:upper:]' '[:lower:]'; then
+          echo "${input%% *} failed"
+          rm -f "$TMP_ERROR_REASON"
+          unset TMP_ERROR_REASON
+          exit 1
+        fi
+      else
+        if ! bash /usr/share/dino/programs/"$(echo "${input%% *}" | tr '[:upper:]' '[:lower:]')" $(cat /tmp/dino/"${TMP_NUM}"/"${TMP_CMD}"); then
+          echo "${input%% *} failed"
+          rm -f "${TMP_ERROR_REASON:?}"
+          unset TMP_ERROR_REASON
+          exit 1
+        fi
+        rm -f "${TMP_ERROR_REASON}"
+      fi
+    fi
+    ;;
+  -h | --help | help)
+    echo "dino -P"
+    echo -e "\t-- Run Dino interactively"
+    echo "dino -C [cmd]"
+    echo -e "\t-- Run Dino non-interactively"
+    exit
+    ;;
+  *)
+    echo "dino -P"
+    echo -e "\t-- Run Dino interactively"
+    echo "dino -C [cmd]"
+    echo -e "\t-- Run Dino non-interactively"
+    exit 1
+    ;;
 esac
