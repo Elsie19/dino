@@ -7,7 +7,7 @@ set -e
 cd /tmp
 rm -rf dino || true
 msg "Cloning 'dino' to '/tmp'"
-git clone --depth=1 https://github.com/Henryws/dino.git
+git clone --depth=1 https://github.com/Elsie19/dino.git
 cd dino
 msg "Installing 'dino' to '/bin/dino'"
 sudo install -v -Dm755 dino /bin/dino
